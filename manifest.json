@@ -1,0 +1,37 @@
+{  
+  "manifest_version": 3,  
+  "name": "Focus Free Refresh",  
+  "version": "1.0",  
+  "description": "Focus Free Refresh", 
+  "author": "Otter Labs",
+  "icons": {  
+    "8": "icon.png",
+    "16": "icon.png",  
+    "32": "icon.png",  
+    "48": "icon.png",  
+    "128": "icon.png"  
+  },  
+  "options_ui": {  
+    "page": "options.html"  
+  },  
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["tabs", "storage", "notifications", "activeTab", "webRequest"],  
+  "background": {  
+    "service_worker": "background.js",
+    "type": "module"
+  },  
+  "action": {  
+    "default_popup": "popup.html",
+    "icon": "icon.png",  
+    "default_icon": "icon.png",
+    "default_title": "Background Refresh Control"
+  },  
+  "content_scripts": [{  
+    "matches": ["<all_urls>"],  
+    "js": ["content.js"]  
+  }],  
+  "storage": {  
+    "activeTimers": {},  
+    "refreshLog": []  
+  }  
+}
