@@ -1,6 +1,6 @@
-# Focus Free Refresh
+# Session Shield
 
-A Chrome extension that automatically refreshes your tabs at customizable intervals. Perfect for monitoring dashboards, tracking updates, or maintaining active sessions.
+A Chrome extension that keeps your web sessions active by preventing automatic refreshes on sites that require user interaction. Stay focused and engaged without interruptions while managing your timers effortlessly.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/tylormayfield)
 
@@ -11,11 +11,12 @@ A Chrome extension that automatically refreshes your tabs at customizable interv
 - ⚡ Lightweight and efficient
 - 🎨 Clean, modern UI built with React and Tailwind CSS
 - ⚙️ Customizable options page
+- 🚫 Prevents automatic refresh of the active tab to maintain user engagement and focus.
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/tylormayfield/focus-free-refresh.git`
-2. Navigate to the repository directory: `cd focus-free-refresh`
+1. Clone the repository: `git clone https://github.com/tylormayfield/session-shield.git`
+2. Navigate to the repository directory: `cd session-shield`
 3. Install dependencies: `npm install`
 
 ## Usage
