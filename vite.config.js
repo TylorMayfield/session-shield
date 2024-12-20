@@ -9,8 +9,8 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: "dist",
     modulePreload: false,
-    sourcemap: false,
-    minify: false,
+    sourcemap: true,
+    minify: true,
     rollupOptions: {
       input: {
         popup: "src/popup/index.html",

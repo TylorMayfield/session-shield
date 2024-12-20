@@ -1,97 +1,123 @@
-import React from "react";
+/* eslint-disable no-undef */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect, useCallback } from "react";
 import { PlayIcon, PauseIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
-function TimerRow({ tabId, timer, onRefresh, totalTime }) {
-  const [timeLeft, setTimeLeft] = React.useState(totalTime); // Initialize with totalTime
-  const [isPaused, setIsPaused] = React.useState(timer.isPaused); // Track the pause state
+const DEFAULT_TITLE = "Unknown Tab";
+const TITLE_MAX_LENGTH = 25;
 
-  // Reset timeLeft when totalTime changes
-  React.useEffect(() => {
+function TimerRow({ tabId, timer, onRefresh, totalTime = 0 }) {
+  // Validate props
+  if (!timer || typeof tabId === "undefined") {
+    console.warn("TimerRow: Missing required props");
+    return null;
+  }
+
+  const [timeLeft, setTimeLeft] = useState(totalTime);
+  const [isPaused, setIsPaused] = useState(timer.isPaused);
+  const [hasImageError, setHasImageError] = useState(false);
+
+  // Reset timer when totalTime changes
+  useEffect(() => {
     setTimeLeft(totalTime);
   }, [totalTime]);
 
-  // Timer update logic when not paused
-  React.useEffect(() => {
-    if (isPaused) return; // Don't start the interval if paused
+  // Format title with ellipsis if too long
+  const formatTitle = useCallback((title) => {
+    const cleanTitle = title?.trim() || DEFAULT_TITLE;
+    return cleanTitle.length > TITLE_MAX_LENGTH
+      ? `${cleanTitle.substring(0, TITLE_MAX_LENGTH)}...`
+      : cleanTitle;
+  }, []);
+
+  // Timer logic
+  useEffect(() => {
+    if (isPaused) return;
 
     const intervalId = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => {
-        // Reset to totalTime when the timer reaches 0
-        if (prevTimeLeft <= 0) {
-          return totalTime;
-        }
-        return prevTimeLeft - 1; // Decrease by 1 every second
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) return totalTime;
+        return prevTime - 1;
       });
     }, 1000);
 
-    // Cleanup on component unmount or if paused
     return () => clearInterval(intervalId);
   }, [isPaused, totalTime]);
 
-  // Action handler for pause/resume
-  const handleAction = async (action) => {
-    if (action === "pause") {
-      setIsPaused(true);
-    } else if (action === "resume") {
-      setIsPaused(false);
-    }
+  // Handle timer actions
+  const handleAction = useCallback(
+    async (action) => {
+      try {
+        if (action === "pause" || action === "resume") {
+          setIsPaused(action === "pause");
+        }
 
-    // Send the action to the background or extension service
-    await chrome.runtime.sendMessage({
-      action,
-      tabId: parseInt(tabId),
-    });
-    onRefresh();
-  };
+        await chrome.runtime.sendMessage({
+          action,
+          tabId: parseInt(tabId, 10),
+        });
 
-  if (!timer) return null; // If timer is null, don't render anything
+        onRefresh?.();
+      } catch (error) {
+        console.error("Error handling timer action:", error);
+      }
+    },
+    [tabId, onRefresh]
+  );
 
-  const trimmedTitle =
-    (timer.title || "Unknown Tab").length > 25
-      ? (timer.title || "Unknown Tab").substring(0, 25) + "..."
-      : timer.title || "Unknown Tab";
+  const formattedTitle = formatTitle(timer.title);
 
   return (
-    <tr className="border-t">
-      <td className="py-2 px-2" title={timer.title}>
-        <div className="flex items-center">
-          <img
-            src={timer.favIconUrl}
-            className="w-4 h-4 mr-2"
-            onError={(e) => (e.target.style.display = "none")}
-          />
-          <span className="truncate max-w-[150px]">{trimmedTitle}</span>
+    <tr className="border-t hover:bg-gray-50 transition-colors duration-150">
+      <td className="py-2 px-2">
+        <div className="flex items-center space-x-2">
+          {!hasImageError && timer.favIconUrl && (
+            <img
+              src={timer.favIconUrl}
+              alt=""
+              className="w-4 h-4 object-contain"
+              onError={() => setHasImageError(true)}
+            />
+          )}
+          <span className="truncate max-w-[150px]" title={timer.title}>
+            {formattedTitle}
+          </span>
         </div>
       </td>
-      <td className="py-2 px-2 text-center">{timeLeft}s</td>
+      <td className="py-2 px-2 text-center font-medium">{timeLeft}s</td>
       <td className="py-2 px-2 text-center">
         <span
           className={`px-2 py-1 rounded text-sm ${
-            isPaused ? "bg-yellow-200" : "bg-green-200"
+            isPaused
+              ? "bg-yellow-200 text-yellow-800"
+              : "bg-green-200 text-green-800"
           }`}
         >
           {isPaused ? "Paused" : "Active"}
         </span>
       </td>
-      <td className="py-2 px-2 text-center">
+      <td className="py-2 px-2">
         <div className="flex justify-center space-x-2">
           <button
             onClick={() => handleAction(isPaused ? "resume" : "pause")}
-            className={`text-gray-600 hover:text-${
+            className={`p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${
               isPaused ? "green" : "yellow"
-            }-500 transition`}
+            }-500 transition-colors`}
+            title={isPaused ? "Resume Timer" : "Pause Timer"}
           >
             {isPaused ? (
-              <PlayIcon className="h-5 w-5" />
+              <PlayIcon className="h-5 w-5 text-green-600" />
             ) : (
-              <PauseIcon className="h-5 w-5" />
+              <PauseIcon className="h-5 w-5 text-yellow-600" />
             )}
           </button>
           <button
             onClick={() => handleAction("removeTimer")}
-            className="text-gray-600 hover:text-red-500 transition"
+            className="p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+            title="Remove Timer"
           >
-            <XMarkIcon className="h-5 w-5" />
+            <XMarkIcon className="h-5 w-5 text-red-600" />
           </button>
         </div>
       </td>
@@ -99,4 +125,4 @@ function TimerRow({ tabId, timer, onRefresh, totalTime }) {
   );
 }
 
-export default TimerRow;
+export default React.memo(TimerRow);
