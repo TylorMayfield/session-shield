@@ -2,7 +2,15 @@
 let skipActiveTab = false;
 let activeTimers = {};
 
-// Add a new message listener for the setting
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (activeTimers[tabId] && (changeInfo.title || changeInfo.favIconUrl)) {
+    activeTimers[tabId].title = tab.title;
+    activeTimers[tabId].favIconUrl = tab.favIconUrl;
+    chrome.storage.local.set({ activeTimers });
+    broadcastTimerUpdate();
+  }
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getActiveTimers") {
     chrome.storage.local.get("timers", (result) => {
@@ -43,18 +51,28 @@ const refreshTab = async (tabId) => {
   }
 };
 
-const startTimer = (tabId, interval) => {
+const startTimer = async (tabId, interval) => {
   if (activeTimers[tabId]) {
     clearInterval(activeTimers[tabId].timerId);
   }
 
-  activeTimers[tabId] = {
-    interval,
-    lastRefresh: Date.now(),
-    timerId: setInterval(() => refreshTab(tabId), interval * 1000),
-  };
-  chrome.storage.local.set({ activeTimers });
-  broadcastTimerUpdate();
+  try {
+    const tab = await chrome.tabs.get(tabId);
+
+    activeTimers[tabId] = {
+      interval,
+      lastRefresh: Date.now(),
+      timerId: setInterval(() => refreshTab(tabId), interval * 1000),
+      title: tab.title,
+      favIconUrl: tab.favIconUrl,
+      url: tab.url,
+    };
+
+    chrome.storage.local.set({ activeTimers });
+    broadcastTimerUpdate();
+  } catch (error) {
+    console.error("Error starting timer:", error);
+  }
 };
 
 const broadcastTimerUpdate = () => {
@@ -67,9 +85,9 @@ const broadcastTimerUpdate = () => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
     case "setInterval":
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
         if (tabs[0]) {
-          startTimer(tabs[0].id, request.interval);
+          await startTimer(tabs[0].id, request.interval);
           sendResponse({ success: true });
         }
       });

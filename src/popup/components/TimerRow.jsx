@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { PlayIcon, PauseIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 const DEFAULT_TITLE = "Unknown Tab";
-const TITLE_MAX_LENGTH = 25;
+const TITLE_MAX_LENGTH = 12;
 
 function TimerRow({ tabId, timer, onRefresh, totalTime = 0 }) {
   // Validate props
@@ -85,7 +85,7 @@ function TimerRow({ tabId, timer, onRefresh, totalTime = 0 }) {
           </span>
         </div>
       </td>
-      <td className="py-2 px-2 text-center font-medium">{timeLeft}s</td>
+      <td className="py-2 px-2 text-center font-medium">{totalTime}s</td>
       <td className="py-2 px-2 text-center">
         <span
           className={`px-2 py-1 rounded text-sm ${

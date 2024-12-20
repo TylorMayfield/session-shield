@@ -7,7 +7,7 @@ import { validateTimers } from "../../utils/timerValidation";
 
 const TABLE_HEADERS = [
   { id: "tab", label: "Tab", align: "left" },
-  { id: "next", label: "Next", align: "center" },
+  { id: "next", label: "Frequency", align: "center" },
   { id: "status", label: "Status", align: "center" },
   { id: "actions", label: "Actions", align: "center" },
 ];
