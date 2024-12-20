@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Focus Free Refresh",
+  "name": "Session Shield",
   "version": "1.0.0",
-  "description": "Automatically refresh your tabs at custom intervals",
+  "description": "Session Shield keeps your web sessions active by preventing automatic refreshes on sites that require user interaction. Stay focused and engaged without interruptions while managing your timers effortlessly.",
   "permissions": ["storage", "tabs", "activeTab"],
   "action": {
     "default_popup": "src/popup/index.html"
