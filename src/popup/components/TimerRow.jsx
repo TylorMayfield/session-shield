@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { PlayIcon, PauseIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 const DEFAULT_TITLE = "Unknown Tab";
@@ -14,14 +14,8 @@ function TimerRow({ tabId, timer, onRefresh, totalTime = 0 }) {
     return null;
   }
 
-  const [timeLeft, setTimeLeft] = useState(totalTime);
   const [isPaused, setIsPaused] = useState(timer.isPaused);
   const [hasImageError, setHasImageError] = useState(false);
-
-  // Reset timer when totalTime changes
-  useEffect(() => {
-    setTimeLeft(totalTime);
-  }, [totalTime]);
 
   // Format title with ellipsis if too long
   const formatTitle = useCallback((title) => {
@@ -30,20 +24,6 @@ function TimerRow({ tabId, timer, onRefresh, totalTime = 0 }) {
       ? `${cleanTitle.substring(0, TITLE_MAX_LENGTH)}...`
       : cleanTitle;
   }, []);
-
-  // Timer logic
-  useEffect(() => {
-    if (isPaused) return;
-
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 0) return totalTime;
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [isPaused, totalTime]);
 
   // Handle timer actions
   const handleAction = useCallback(

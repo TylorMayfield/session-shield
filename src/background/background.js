@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Add at the start of the file
 let skipActiveTab = false;
 let activeTimers = {};
@@ -43,7 +44,6 @@ const refreshTab = async (tabId) => {
     }
   }
   chrome.tabs.reload(tabId);
-  // Update the lastRefresh time when the tab is actually refreshed
   if (activeTimers[tabId]) {
     activeTimers[tabId].lastRefresh = Date.now();
     chrome.storage.local.set({ activeTimers });
@@ -125,4 +125,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       break;
   }
   return true;
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  if (activeTimers[tabId]) {
+    clearInterval(activeTimers[tabId].timerId);
+    delete activeTimers[tabId];
+    chrome.storage.local.set({ activeTimers });
+    broadcastTimerUpdate();
+  }
 });
