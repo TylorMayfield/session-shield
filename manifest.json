@@ -19,9 +19,11 @@
     }
   ],
   "icons": {
-    "16": "src/assets/icon-16.png",
-    "32": "src/assets/icon-32.png",
-    "48": "src/assets/icon-48.png",
-    "128": "src/assets/icon-128.png"
+    "57": "src/assets/apple-touch-icon-57x57.png",
+    "72": "src/assets/apple-touch-icon-72x72.png",
+    "114": "src/assets/apple-touch-icon-114x114.png",
+    "144": "src/assets/apple-touch-icon-144x144.png",
+    "152": "src/assets/apple-touch-icon-152x152.png",
+    "180": "src/assets/apple-touch-icon-180x180.png"
   }
 }
