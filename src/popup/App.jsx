@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-undef */
 import { useState, useEffect, useCallback } from "react";
 import TimerControls from "./components/TimerControls";
@@ -7,6 +8,7 @@ import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 
 const DEFAULT_INTERVAL = 30;
 const DEFAULT_REFRESH_RATE = 1000;
+const DEFAULT_SKIP_ACTIVE_TAB = false;
 
 function App() {
   const [state, setState] = useState({
@@ -16,6 +18,11 @@ function App() {
     isLoading: true,
     error: null,
   });
+
+  useEffect(() => {
+    setState((prev) => ({ ...prev, skipActiveTab: DEFAULT_SKIP_ACTIVE_TAB }));
+    handleChromeMessage("setSkipActiveTab", { value: DEFAULT_SKIP_ACTIVE_TAB });
+  }, []);
 
   const { interval, timers, skipActiveTab, isLoading, error } = state;
 
@@ -104,11 +111,10 @@ function App() {
         disabled={isLoading}
       />
 
+      <TimerList timers={timers} onRefresh={loadTimers} isLoading={isLoading} />
       <div className="mt-4">
         <KofiButton />
       </div>
-
-      <TimerList timers={timers} onRefresh={loadTimers} isLoading={isLoading} />
     </div>
   );
 }
