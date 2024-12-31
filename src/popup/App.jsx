@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import TimerControls from "./components/TimerControls";
 import TimerList from "./components/TimerList";
 import KofiButton from "./components/KofiButton";
-import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 
 const DEFAULT_INTERVAL = 30;
 const DEFAULT_REFRESH_RATE = 1000;
@@ -84,7 +83,11 @@ function App() {
       <header className="mb-6">
         <h1 className="flex items-center text-2xl font-bold text-green-600">
           Session Shield
-          <ShieldCheckIcon className="w-8 h-8 text-green-600 ml-2" />
+          <img
+            src={"/icon.png"}
+            alt="Session Shield"
+            className="w-8 h-8 ml-2"
+          />
         </h1>
 
         {error && (
