@@ -21,8 +21,8 @@ A Chrome extension that keeps your web sessions active by preventing automatic r
 
 ## Usage
 
-1. Build the extension: `npm run build`
-2. Install the extension: `npm run install`
+1. Install the dependencies: `npm run install`
+2. Build the extension: `npm run build`
 3. Open Chrome and navigate to `chrome://extensions/`
 4. Enable "Developer mode" in the top-right corner
 5. Click "Load unpacked" and select the `dist` directory
